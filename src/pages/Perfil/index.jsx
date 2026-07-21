@@ -1,106 +1,83 @@
-    import { useState } from 'react'
-    import { useParams } from 'react-router-dom'
-    import styled from 'styled-components'
-    import { Header } from '../../components/Header'
-    import { Footer } from '../../components/Footer'
-    import { RESTAURANTS } from '../../data/mockData'
+import { useState, useEffect } from 'react';
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
 
-    const Banner = styled.div`
-    width: 100%;
-    height: 280px;
-    background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${props => props.bg});
-    background-size: cover;
-    background-position: center;
-    color: #FFFFFF;
-    padding: 32px 0;
-    `
+import { 
+  Container, 
+  CardapioList, 
+  CardapioItem, 
+  Modal, 
+  ModalContent 
+} from './styles';
 
-    const BannerContent = styled.div`
-    max-width: 1024px;
-    margin: 0 auto;
-    padding: 0 16px;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    `
+const Perfil = () => {
+  const [restaurante, setRestaurante] = useState(null);
+  const [modalEstaAberta, setModalEstaAberta] = useState(false);
+  const [pratoSelecionado, setPratoSelecionado] = useState(null);
 
-    const Container = styled.div`
-    max-width: 1024px;
-    margin: 80px auto;
-    padding: 0 16px;
-    `
+  // Buscando os dados da API por AJAX
+  useEffect(() => {
+    fetch('https://api-ebac.vercel.app/api/efood/restaurantes')
+      .then((res) => res.json())
+      .then((data) => {
+        setRestaurante(data[0]); 
+      })
+      .catch((err) => console.error('Erro ao carregar o cardápio:', err));
+  }, []);
 
-    const DishesGrid = styled.div`
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 32px;
+  const abrirModal = (prato) => {
+    setPratoSelecionado(prato);
+    setModalEstaAberta(true);
+  };
 
-    @media (max-width: 900px) { grid-template-columns: repeat(2, 1fr); }
-    @media (max-width: 600px) { grid-template-columns: 1fr; }
-    `
+  const fecharModal = () => {
+    setModalEstaAberta(false);
+    setPratoSelecionado(null);
+  };
 
-    const DishCard = styled.div`
-    background-color: #E66767;
-    padding: 8px;
-    color: #FFEBD9;
-    display: flex;
-    flex-direction: column;
-    `
+  if (!restaurante) {
+    return <h3>Carregando cardápio...</h3>;
+  }
 
-    const DishImage = styled.img`
-    width: 100%;
-    height: 167px;
-    object-fit: cover;
-    margin-bottom: 8px;
-    `
+  return (
+    <>
+      <Header />
+      
+      <Container>
+        <CardapioList>
+          {restaurante.cardapio.map((prato) => (
+            <CardapioItem key={prato.id}>
+              <img src={prato.foto} alt={prato.nome} />
+              <h3>{prato.nome}</h3>
+              <p>{prato.descricao}</p>
+              <button onClick={() => abrirModal(prato)}>Mais detalhes</button>
+            </CardapioItem>
+          ))}
+        </CardapioList>
+      </Container>
 
-    const ButtonSecondary = styled.button`
-    background-color: #FFEBD9;
-    color: #E66767;
-    border: none;
-    width: 100%;
-    padding: 4px 0;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    margin-top: auto;
-    `
+      {/* Modal do Produto */}
+      {modalEstaAberta && pratoSelecionado && (
+        <Modal className="visivel" onClick={fecharModal}>
+          <div className="overlay" />
+          <ModalContent className="container" onClick={(e) => e.stopPropagation()}>
+            <button className="fechar" onClick={fecharModal}>X</button>
+            <img src={pratoSelecionado.foto} alt={pratoSelecionado.nome} />
+            <div>
+              <h4>{pratoSelecionado.nome}</h4>
+              <p>{pratoSelecionado.descricao}</p>
+              <p>Serve: de {pratoSelecionado.porcao}</p>
+              <button>
+                Adicionar ao carrinho - R$ {pratoSelecionado.preco.toFixed(2).replace('.', ',')}
+              </button>
+            </div>
+          </ModalContent>
+        </Modal>
+      )}
 
-    export default function Perfil() {
-        const { id } = useParams()
-        const [cart, setCart] = useState([])
-        const restaurant = RESTAURANTS.find(r => r.id === Number(id)) || RESTAURANTS[0]
+      <Footer />
+    </>
+  );
+};
 
-        const addToCart = (dish) => {
-            setCart([...cart, dish])
-            alert(`${dish.name} foi adicionado ao carrinho!`)
-        }
-
-        return (
-            <>
-                <Header type="perfil" cartCount={cart.length} onOpenCart={() => { }} />
-                <Banner bg={restaurant.image}>
-                    <BannerContent>
-                        <span style={{ fontSize: '32px', fontWeight: 100 }}>{restaurant.category}</span>
-                        <h2 style={{ fontSize: '32px', fontWeight: 900 }}>{restaurant.title}</h2>
-                    </BannerContent>
-                </Banner>
-                <Container>
-                    <DishesGrid>
-                        {restaurant.dishes.map(dish => (
-                            <DishCard key={dish.id}>
-                                <DishImage src={dish.image} alt={dish.name} />
-                                <h3 style={{ fontSize: '16px', fontWeight: 900, marginBottom: '8px' }}>{dish.name}</h3>
-                                <p style={{ fontSize: '14px', lineHeight: '22px', marginBottom: '8px' }}>{dish.description}</p>
-                                <ButtonSecondary onClick={() => addToCart(dish)}>
-                                    Adicionar ao carrinho
-                                </ButtonSecondary>
-                            </DishCard>
-                        ))}
-                    </DishesGrid>
-                </Container>
-                <Footer />
-            </>
-        )
-    }
+export default Perfil;
