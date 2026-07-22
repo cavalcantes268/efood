@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
+import logoImg from '../../assets/logo (1).png'; // Ajuste o caminho conforme a localização real da sua pasta
 
 const FooterContainer = styled.footer`
   background-color: #FFEBD9;
@@ -12,11 +13,16 @@ const FooterContainer = styled.footer`
   gap: 32px;
 `;
 
-const Logo = styled.h1`
-  font-size: 36px;
-  font-weight: 900;
-  color: #E66767;
-  a { text-decoration: none; color: inherit; }
+// Transformamos em uma div ou mantemos o estilo adaptado para a imagem
+const Logo = styled.div`
+  a {
+    display: inline-block;
+  }
+  
+  img {
+    height: 40px; /* Ajuste a altura conforme necessário */
+    width: auto;
+  }
 `;
 
 const SocialIcons = styled.div`
@@ -46,7 +52,12 @@ const FooterText = styled.p`
 export function Footer() {
     return (
         <FooterContainer>
-            <Logo><Link to="/">efood</Link></Logo>
+            <Logo>
+                {/* O Link aponta para a home "/" e envolve a imagem da logo */}
+                <Link to="/">
+                    <img src={logoImg} alt="efood logo" />
+                </Link>
+            </Logo>
             <SocialIcons>
                 <a href="#"><i className="fa-brands fa-instagram"></i></a>
                 <a href="#"><i className="fa-brands fa-facebook-f"></i></a>

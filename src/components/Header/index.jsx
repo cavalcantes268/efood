@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import logoImg from '../../assets/logo (1).png'; // Ajuste o caminho conforme a localização real da sua pasta
 
 const HeaderHome = styled.header`
   background-color: #FFEBD9;
@@ -28,10 +29,15 @@ const HeaderContainer = styled.div`
 `;
 
 const Logo = styled.h1`
-  font-size: 36px;
-  font-weight: 900;
-  color: #E66767;
-  a { text-decoration: none; color: inherit; }
+  a { 
+    text-decoration: none; 
+    display: inline-block;
+  }
+  
+  img {
+    height: 40px; /* Ajuste a altura conforme necessário para ficar proporcional */
+    width: auto;
+  }
 `;
 
 const HeroTitle = styled.h2`
@@ -55,7 +61,11 @@ export function Header({ type, cartCount, onOpenCart }) {
     if (type === 'home') {
         return (
             <HeaderHome>
-                <Logo><Link to="/">efood</Link></Logo>
+                <Logo>
+                    <Link to="/">
+                        <img src={logoImg} alt="efood logo" />
+                    </Link>
+                </Logo>
                 <HeroTitle>Viva experiências gastronômicas no conforto da sua casa</HeroTitle>
             </HeaderHome>
         );
@@ -67,7 +77,11 @@ export function Header({ type, cartCount, onOpenCart }) {
                 <Link to="/" style={{ color: '#E66767', fontWeight: 900, textDecoration: 'none', fontSize: 18 }}>
                     Restaurantes
                 </Link>
-                <Logo><Link to="/">efood</Link></Logo>
+                <Logo>
+                    <Link to="/">
+                        <img src={logoImg} alt="efood logo" />
+                    </Link>
+                </Logo>
                 <CartButton onClick={onOpenCart}>
                     {cartCount} produto(s) no carrinho
                 </CartButton>

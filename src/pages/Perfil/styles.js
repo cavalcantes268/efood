@@ -7,6 +7,48 @@ export const Container = styled.div`
   padding: 56px 0;
 `;
 
+export const BannerContainer = styled.div`
+  position: relative;
+  height: 280px;
+  display: block;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  color: #fff;
+  
+  &::after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    content: '';
+  }
+`;
+
+export const BannerContent = styled.div`
+  z-index: 1;
+  position: relative;
+  max-width: 1024px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  padding: 25px 0;
+
+  span {
+    font-size: 32px;
+    font-weight: 100;
+  }
+
+  h2 {
+    font-size: 32px;
+    font-weight: 900;
+  }
+`;
+
 export const CardapioList = styled.ul`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
