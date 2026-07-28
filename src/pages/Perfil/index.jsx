@@ -1,5 +1,7 @@
+import { useDispatch } from 'react-redux'
+import { add, open } from '../../store/reducers/cartSlice'
 import { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom' // ✅ Importação correta
+import { useParams } from 'react-router-dom'
 import { Header } from '../../components/Header'
 import { Footer } from '../../components/Footer'
 
@@ -20,8 +22,9 @@ export default function Perfil() {
   const [modalEstaAberta, setModalEstaAberta] = useState(false)
   const [pratoSelecionado, setPratoSelecionado] = useState(null)
 
+  const dispatch = useDispatch() // 👈 Inicializa o useDispatch
+
   useEffect(() => {
-    // Chamada direta para a URL oficial da API EBAC
     fetch(`https://api-ebac.vercel.app/api/efood/restaurantes/${id}`)
       .then((res) => {
         if (!res.ok) {
@@ -47,6 +50,13 @@ export default function Perfil() {
   const fecharModal = () => {
     setModalEstaAberta(false)
     setPratoSelecionado(null)
+  }
+
+  // 👈 Função que adiciona o prato ao Redux, abre o carrinho e fecha o modal
+  const addToCart = () => {
+    dispatch(add(pratoSelecionado))
+    dispatch(open())
+    fecharModal()
   }
 
   if (isLoading) {
@@ -118,7 +128,7 @@ export default function Perfil() {
               <h4>{pratoSelecionado.nome}</h4>
               <p>{pratoSelecionado.descricao}</p>
               <p>Serve: {pratoSelecionado.porcao}</p>
-              <button>
+              <button onClick={addToCart}> {/* 👈 Aqui aciona a função ao clicar */}
                 Adicionar ao carrinho - R${' '}
                 {pratoSelecionado.preco?.toFixed(2).replace('.', ',')}
               </button>
