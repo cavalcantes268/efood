@@ -1,6 +1,8 @@
+import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import logoImg from '../../assets/logo (1).png'; // Ajuste o caminho conforme a localização real da sua pasta
+import logoImg from '../../assets/logo (1).png'; 
+import { open } from '../../store/reducers/cartSlice'; // 👈 1. Importação ativada!
 
 const HeaderHome = styled.header`
   background-color: #FFEBD9;
@@ -35,7 +37,7 @@ const Logo = styled.h1`
   }
   
   img {
-    height: 40px; /* Ajuste a altura conforme necessário para ficar proporcional */
+    height: 40px; 
     width: auto;
   }
 `;
@@ -57,7 +59,22 @@ const CartButton = styled.button`
   cursor: pointer;
 `;
 
-export function Header({ type, cartCount, onOpenCart }) {
+export function Header({ type, onOpenCart }) {
+    const dispatch = useDispatch();
+
+    // Pega a lista de itens do Redux
+    const items = useSelector((state) => state.cart.items);
+    const totalQuantity = items ? items.length : 0;
+
+    // Dispara a action para abrir o carrinho no Redux
+    const handleOpenCart = () => {
+        if (onOpenCart) {
+            onOpenCart();
+        } else {
+            dispatch(open()); // 👈 2. Dispatch ativado!
+        }
+    };
+
     if (type === 'home') {
         return (
             <HeaderHome>
@@ -82,8 +99,8 @@ export function Header({ type, cartCount, onOpenCart }) {
                         <img src={logoImg} alt="efood logo" />
                     </Link>
                 </Logo>
-                <CartButton onClick={onOpenCart}>
-                    {cartCount} produto(s) no carrinho
+                <CartButton type="button" onClick={handleOpenCart}>
+                    {totalQuantity} produto(s) no carrinho
                 </CartButton>
             </HeaderContainer>
         </HeaderPerfil>

@@ -71,71 +71,81 @@ const Cart = () => {
             &times; Fechar carrinho
           </button>
 
-          <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-            {items.map((item) => (
-              <li key={item.id} style={{
-                display: 'flex',
-                gap: '8px',
-                backgroundColor: '#FFEBD9',
-                color: '#E66767',
-                padding: '8px',
-                position: 'relative',
-                marginBottom: '16px',
-                borderRadius: '4px'
-              }}>
-                <img src={item.foto} alt={item.nome} style={{ width: '80px', height: '80px', objectFit: 'cover' }} />
-                <div>
-                  <h3 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '8px' }}>{item.nome}</h3>
-                  <span style={{ fontSize: '14px', fontWeight: 'bold' }}>{parseToBrl(item.preco)}</span>
-                </div>
-                <button 
-                  onClick={() => dispatch(remove(item.id))}
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    color: '#E66767',
-                    fontWeight: 'bold',
-                    position: 'absolute',
-                    bottom: '8px',
-                    right: '8px',
-                    cursor: 'pointer'
-                  }}
-                >
-                  🗑️
-                </button>
-              </li>
-            ))}
-          </ul>
+          {/* Tratamento para carrinho vazio */}
+          {items.length === 0 ? (
+            <p style={{ textAlign: 'center', marginTop: '32px', fontWeight: 'bold' }}>
+              O carrinho está vazio. Adicione produtos para continuar!
+            </p>
+          ) : (
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+              {items.map((item) => (
+                <li key={item.id} style={{
+                  display: 'flex',
+                  gap: '8px',
+                  backgroundColor: '#FFEBD9',
+                  color: '#E66767',
+                  padding: '8px',
+                  position: 'relative',
+                  marginBottom: '16px',
+                  borderRadius: '4px'
+                }}>
+                  <img src={item.foto} alt={item.nome} style={{ width: '80px', height: '80px', objectFit: 'cover' }} />
+                  <div>
+                    <h3 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '8px' }}>{item.nome}</h3>
+                    <span style={{ fontSize: '14px', fontWeight: 'bold' }}>{parseToBrl(item.preco)}</span>
+                  </div>
+                  <button 
+                    onClick={() => dispatch(remove(item.id))}
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      color: '#E66767',
+                      fontWeight: 'bold',
+                      position: 'absolute',
+                      bottom: '8px',
+                      right: '8px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    🗑️
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
-        <div>
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            color: '#FFEBD9',
-            fontWeight: 'bold',
-            fontSize: '14px',
-            marginBottom: '16px',
-            marginTop: '40px'
-          }}>
-            <p>Valor total</p>
-            <p>{parseToBrl(getTotalPrice())}</p>
+        {/* Rodapé só aparece se houver itens */}
+        {items.length > 0 && (
+          <div>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              color: '#FFEBD9',
+              fontWeight: 'bold',
+              fontSize: '14px',
+              marginBottom: '16px',
+              marginTop: '40px'
+            }}>
+              <p>Valor total</p>
+              <p>{parseToBrl(getTotalPrice())}</p>
+            </div>
+            <button style={{
+              backgroundColor: '#FFEBD9',
+              color: '#E66767',
+              border: 'none',
+              width: '100%',
+              padding: '12px',
+              fontSize: '14px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              textAlign: 'center',
+              borderRadius: '4px'
+            }}>
+              Continuar com a entrega
+            </button>
           </div>
-          <button style={{
-            backgroundColor: '#FFEBD9',
-            color: '#E66767',
-            border: 'none',
-            width: '100%',
-            padding: '12px',
-            fontSize: '14px',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            textAlign: 'center',
-            borderRadius: '4px'
-          }}>
-            Continuar com a entrega
-          </button>
-        </div>
+        )}
       </aside>
     </div>
   );
