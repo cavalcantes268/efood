@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import logoImg from '../../assets/logo (1).png'; // Ajuste o caminho conforme a localização real da sua pasta
+import { useDispatch, useSelector } from 'react-redux';
+import { open } from '../../store/reducers/cartSlice';
+import logoImg from '../../assets/logo (1).png';
 
 const HeaderHome = styled.header`
   background-color: #FFEBD9;
@@ -35,7 +37,7 @@ const Logo = styled.h1`
   }
   
   img {
-    height: 40px; /* Ajuste a altura conforme necessário para ficar proporcional */
+    height: 40px;
     width: auto;
   }
 `;
@@ -57,37 +59,46 @@ const CartButton = styled.button`
   cursor: pointer;
 `;
 
-export function Header({ type, cartCount, onOpenCart }) {
-    if (type === 'home') {
-        return (
-            <HeaderHome>
-                <Logo>
-                    <Link to="/">
-                        <img src={logoImg} alt="efood logo" />
-                    </Link>
-                </Logo>
-                <HeroTitle>Viva experiências gastronômicas no conforto da sua casa</HeroTitle>
-            </HeaderHome>
-        );
-    }
+export function Header({ type }) {
+  const dispatch = useDispatch();
+  // Pega a lista de itens direto do Redux
+  const { items } = useSelector((state) => state.cart);
 
+  const handleOpenCart = () => {
+    dispatch(open());
+  };
+
+  if (type === 'home') {
     return (
-        <HeaderPerfil>
-            <HeaderContainer>
-                <Link to="/" style={{ color: '#E66767', fontWeight: 900, textDecoration: 'none', fontSize: 18 }}>
-                    Restaurantes
-                </Link>
-                <Logo>
-                    <Link to="/">
-                        <img src={logoImg} alt="efood logo" />
-                    </Link>
-                </Logo>
-                <CartButton onClick={onOpenCart}>
-                    {cartCount} produto(s) no carrinho
-                </CartButton>
-            </HeaderContainer>
-        </HeaderPerfil>
+      <HeaderHome>
+        <Logo>
+          <Link to="/">
+            <img src={logoImg} alt="efood logo" />
+          </Link>
+        </Logo>
+        <HeroTitle>Viva experiências gastronômicas no conforto da sua casa</HeroTitle>
+      </HeaderHome>
     );
+  }
+
+  return (
+    <HeaderPerfil>
+      <HeaderContainer>
+        <Link to="/" style={{ color: '#E66767', fontWeight: 900, textDecoration: 'none', fontSize: 18 }}>
+          Restaurantes
+        </Link>
+        <Logo>
+          <Link to="/">
+            <img src={logoImg} alt="efood logo" />
+          </Link>
+        </Logo>
+        {/* O botão agora chama a action open() e pega a quantidade real via Redux */}
+        <CartButton onClick={handleOpenCart}>
+          {items.length} produto(s) no carrinho
+        </CartButton>
+      </HeaderContainer>
+    </HeaderPerfil>
+  );
 }
 
 export default Header;
