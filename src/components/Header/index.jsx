@@ -1,6 +1,6 @@
+import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { useDispatch, useSelector } from 'react-redux';
 import { open } from '../../store/reducers/cartSlice';
 import logoImg from '../../assets/logo (1).png';
 
@@ -61,8 +61,8 @@ const CartButton = styled.button`
 
 export function Header({ type }) {
   const dispatch = useDispatch();
-  // Pega a lista de itens direto do Redux
-  const { items } = useSelector((state) => state.cart);
+  // Pega a lista de itens direto do Redux com garantia de ser um array seguro
+  const { items = [] } = useSelector((state) => state.cart);
 
   const handleOpenCart = () => {
     dispatch(open());
@@ -92,8 +92,7 @@ export function Header({ type }) {
             <img src={logoImg} alt="efood logo" />
           </Link>
         </Logo>
-        {/* O botão agora chama a action open() e pega a quantidade real via Redux */}
-        <CartButton onClick={handleOpenCart}>
+        <CartButton type="button" onClick={handleOpenCart}>
           {items.length} produto(s) no carrinho
         </CartButton>
       </HeaderContainer>

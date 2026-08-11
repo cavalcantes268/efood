@@ -12,7 +12,6 @@ const Cart = () => {
   const [orderId, setOrderId] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // Variavel usada no Yup abaixo
   const currentYear = new Date().getFullYear();
 
   const getTotalPrice = () => {
@@ -59,13 +58,12 @@ const Cart = () => {
         .required('O campo é obrigatório'),
       expiresYear: Yup.number()
         .typeError('Ano inválido')
-        .min(currentYear, 'Ano inválido') // 👈 currentYear usado aqui
+        .min(currentYear, 'Ano inválido')
         .required('O campo é obrigatório')
     }),
     onSubmit: async (values) => {
       setIsLoading(true);
 
-      // Remove traços e pontos do CEP para garantir o formato aceito pela API
       const cleanZipCode = values.zipCode.replace(/\D/g, '');
 
       const payload = {
