@@ -43,14 +43,26 @@ const Cart = () => {
       expiresYear: ''
     },
     validationSchema: Yup.object({
-      receiver: Yup.string().required('O campo é obrigatório'),
+      receiver: Yup.string()
+        .min(5, 'O nome deve ter pelo menos 5 caracteres')
+        .required('O campo é obrigatório'),
       description: Yup.string().required('O campo é obrigatório'),
       city: Yup.string().required('O campo é obrigatório'),
-      zipCode: Yup.string().required('O campo é obrigatório'),
+      // Validação rigorosa de CEP: aceita 8 dígitos ou formato 00000-000
+      zipCode: Yup.string()
+        .matches(/^\d{5}-?\d{3}$/, 'CEP deve ter 8 dígitos (ex: 12345-678)')
+        .required('O campo é obrigatório'),
       number: Yup.string().required('O campo é obrigatório'),
       cardName: Yup.string().required('O campo é obrigatório'),
-      cardNumber: Yup.string().required('O campo é obrigatório'),
-      cardCode: Yup.string().required('O campo é obrigatório'),
+      // Validação de Cartão: aceita exatamente 16 dígitos (com ou sem espaços)
+      cardNumber: Yup.string()
+        .transform((value) => value.replace(/\s+/g, ''))
+        .matches(/^\d{16}$/, 'O cartão deve ter exatamente 16 dígitos')
+        .required('O campo é obrigatório'),
+      // Validação do CVV: aceita 3 a 4 dígitos
+      cardCode: Yup.string()
+        .matches(/^\d{3,4}$/, 'CVV deve ter 3 ou 4 dígitos')
+        .required('O campo é obrigatório'),
       expiresMonth: Yup.number()
         .typeError('Mês inválido')
         .min(1, 'Mês inválido')
@@ -58,13 +70,14 @@ const Cart = () => {
         .required('O campo é obrigatório'),
       expiresYear: Yup.number()
         .typeError('Ano inválido')
-        .min(currentYear, 'Ano inválido')
+        .min(currentYear, 'Ano expirado ou inválido')
         .required('O campo é obrigatório')
     }),
     onSubmit: async (values) => {
       setIsLoading(true);
 
       const cleanZipCode = values.zipCode.replace(/\D/g, '');
+      const cleanCardNumber = values.cardNumber.replace(/\D/g, '');
 
       const payload = {
         products: items.map((item) => ({
@@ -84,7 +97,7 @@ const Cart = () => {
         payment: {
           card: {
             name: values.cardName,
-            number: values.cardNumber,
+            number: cleanCardNumber,
             code: Number(values.cardCode),
             expires: {
               month: Number(values.expiresMonth),
@@ -455,6 +468,7 @@ const Cart = () => {
                   id="cardNumber"
                   name="cardNumber"
                   type="text"
+                  placeholder="0000 0000 0000 0000"
                   style={inputStyle}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
@@ -469,6 +483,7 @@ const Cart = () => {
                   id="cardCode"
                   name="cardCode"
                   type="text"
+                  placeholder="123"
                   style={inputStyle}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
@@ -485,6 +500,7 @@ const Cart = () => {
                   id="expiresMonth"
                   name="expiresMonth"
                   type="number"
+                  placeholder="12"
                   style={inputStyle}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
@@ -499,7 +515,7 @@ const Cart = () => {
                   id="expiresYear"
                   name="expiresYear"
                   type="number"
-                  placeholder="2026"
+                  placeholder="2028"
                   style={inputStyle}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
